@@ -34,12 +34,28 @@ public class FraudDetectorTest {
 
         assertEquals(2, frauds.size());
         assertTrue(frauds.contains("apple") && frauds.contains("cat"));
-        assertEquals(FraudDetector.detectFraud(rawTransactions, calendar.getTime(), 1800).size(), 0);
+        assertEquals(0, FraudDetector.detectFraud(rawTransactions, calendar.getTime(), 1800).size());
 
         // Date: 2015-02-10
         calendar.set(Calendar.YEAR, 2015);
         calendar.set(Calendar.MONTH, Calendar.FEBRUARY);
         calendar.set(Calendar.DAY_OF_MONTH, 10);
-        assertEquals(FraudDetector.detectFraud(rawTransactions, calendar.getTime(), 180).size(), 0);
+        assertEquals(0, FraudDetector.detectFraud(rawTransactions, calendar.getTime(), 180).size());
+    }
+
+    @Test
+    public void testInvalidCsv() {
+        List<String> rawTransactions = Arrays.asList(
+                "apple,2018-06-0,8T05:18:02,89.58",
+                "banana,2018-06-08T06:39:59,51.04"
+        );
+
+        // Date: 2018-06-08
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.YEAR, 2015);
+        calendar.set(Calendar.MONTH, Calendar.JUNE);
+        calendar.set(Calendar.DAY_OF_MONTH, 8);
+        assertEquals(0, FraudDetector.detectFraud(rawTransactions, calendar.getTime(), 180).size());
+
     }
 }

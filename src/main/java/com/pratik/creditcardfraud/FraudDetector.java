@@ -11,6 +11,8 @@ import java.util.*;
  * 2. If the date is same as check date and hash is not already marked as fraud, continue, otherwise go to next iteration
  * 3. Maintain hashmap of hashes and their total price
  * 4. If total price is greater than threshold, add hash to fraudHashs set; since its a Set, hashes will be unique
+ *
+ * Incase of invalid transaction, it is logged and is ignored
  */
 public class FraudDetector {
 
@@ -27,17 +29,21 @@ public class FraudDetector {
         String checkDay = dateFormat.format(checkDate);
 
         for (String rawTransaction : transactionList) {
-            Transaction transaction = new Transaction(rawTransaction);
+            try {
+                Transaction transaction = new Transaction(rawTransaction);
 
-            if (transaction.doesDayMatch(checkDay) && !fraudHashs.contains(transaction.getCardhash())) {
-                Double sum = cardsTotals.containsKey(transaction.getCardhash()) ? cardsTotals.get(transaction.getCardhash()) : 0;
-                sum = sum + transaction.getPrice();
+                if (transaction.doesDayMatch(checkDay) && !fraudHashs.contains(transaction.getCardhash())) {
+                    Double sum = cardsTotals.containsKey(transaction.getCardhash()) ? cardsTotals.get(transaction.getCardhash()) : 0;
+                    sum = sum + transaction.getPrice();
 
-                cardsTotals.put(transaction.getCardhash(), sum);
+                    cardsTotals.put(transaction.getCardhash(), sum);
 
-                if (sum >= threshold) {
-                    fraudHashs.add(transaction.getCardhash());
+                    if (sum >= threshold) {
+                        fraudHashs.add(transaction.getCardhash());
+                    }
                 }
+            } catch (IllegalArgumentException e) {
+                System.out.println(e.getMessage().concat(" occurred for ").concat(rawTransaction));
             }
         }
 
