@@ -14,29 +14,29 @@ import java.util.*;
  */
 public class FraudDetector {
 
-    public static Set<String> detectFraud(List<String> transactions, Date checkDate,
+    public static Set<String> detectFraud(List<String> transactionList, Date checkDate,
                               double threshold) {
         Set<String> fraudHashs = new HashSet<String>();
 
-        if (transactions.isEmpty()) {
+        if (transactionList.isEmpty()) {
             return fraudHashs;
         }
 
-        Map<String, Double> cardTotal = new HashMap<String, Double>();
+        Map<String, Double> cardsTotals = new HashMap<String, Double>();
         final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String checkDay = dateFormat.format(checkDate);
 
-        for (String trans : transactions) {
-            Transaction eachTrans = new Transaction(trans);
+        for (String rawTransaction : transactionList) {
+            Transaction transaction = new Transaction(rawTransaction);
 
-            if (eachTrans.doesDayMatch(checkDay) && !fraudHashs.contains(eachTrans.getCardhash())) {
-                Double totalPrice = cardTotal.containsKey(eachTrans.getCardhash()) ? cardTotal.get(eachTrans.getCardhash()) : 0;
-                totalPrice = totalPrice + eachTrans.getPrice();
+            if (transaction.doesDayMatch(checkDay) && !fraudHashs.contains(transaction.getCardhash())) {
+                Double sum = cardsTotals.containsKey(transaction.getCardhash()) ? cardsTotals.get(transaction.getCardhash()) : 0;
+                sum = sum + transaction.getPrice();
 
-                cardTotal.put(eachTrans.getCardhash(), totalPrice);
+                cardsTotals.put(transaction.getCardhash(), sum);
 
-                if (totalPrice >= threshold) {
-                    fraudHashs.add(eachTrans.getCardhash());
+                if (sum >= threshold) {
+                    fraudHashs.add(transaction.getCardhash());
                 }
             }
         }
