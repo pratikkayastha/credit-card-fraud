@@ -27,7 +27,7 @@ public class FraudDetector {
         String checkDay = dateFormat.format(checkDate);
 
         for (String trans : transactions) {
-            Transaction eachTrans = Transaction.parse(trans);
+            Transaction eachTrans = new Transaction(trans);
 
             if (eachTrans.doesDayMatch(checkDay) && !fraudHashs.contains(eachTrans.getCardhash())) {
                 Double totalPrice = cardTotal.containsKey(eachTrans.getCardhash()) ? cardTotal.get(eachTrans.getCardhash()) : 0;

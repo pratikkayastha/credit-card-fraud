@@ -6,13 +6,7 @@ public class Transaction {
     private double price;
     private String timestamp;
 
-    public boolean doesDayMatch(String checkDay) {
-        return this.timestamp.contains(checkDay);
-    }
-
-    public static Transaction parse(String rawTransaction) {
-        Transaction transaction = new Transaction();
-
+    public Transaction (String rawTransaction) {
         if (rawTransaction==null) {
             throw new IllegalArgumentException("Transaction CSV is not in proper format!");
         }
@@ -25,20 +19,21 @@ public class Transaction {
             throw new IllegalArgumentException("Transaction CSV is not in proper format!");
         }
 
-        transaction.setCardhash(transactionDetails[0]);
-        transaction.setTimestamp(transactionDetails[1]);
+        this.cardhash = transactionDetails[0];
+        this.timestamp = transactionDetails[1];
 
         try {
-            transaction.setPrice(Double.parseDouble(transactionDetails[2]));
+            this.price = Double.parseDouble(transactionDetails[2]);
         } catch (NumberFormatException nfe) {
             throw new IllegalArgumentException("Price is not in proper format!");
         }
-        if (transaction.getPrice()<0) {
+        if (this.price<0) {
             throw new IllegalArgumentException("Price cannot be less than zero!");
         }
+    }
 
-        return transaction;
-
+    public boolean doesDayMatch(String checkDay) {
+        return this.timestamp.contains(checkDay);
     }
 
     public String getCardhash() {
